@@ -6,8 +6,8 @@
 
 // database connect 应用启动时已经初始化完成
 
-// var host = '120.27.124.108';
-const host = '127.0.0.1';
+var host = '120.27.124.108';
+// const host = '127.0.0.1';
 var port = '8529';
 var database = 'phonegame';
 var username = 'tester';

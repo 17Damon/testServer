@@ -10,9 +10,13 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var dao = {};
-// dao.user = require('user_dao');
 dao.item = require('./item_dao');
 dao.user = require('./user_dao');
+dao.bettingRecord = require('./bettingRecord_dao');
+dao.systemInfo = require('./systemInfo_dao');
+dao.gainBonusRecord = require('./gainBonusRecord_dao');
+dao.tempSpace = require('./tempSpace_dao');
+dao.lotteryRecord = require('./lotteryRecord_dao');
 
 //baseDao
 function baseDao(module, method, params) {

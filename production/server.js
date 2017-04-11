@@ -31,7 +31,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 //数据库dao
 /**
- * Created by zhubg on 2017/2/14.
+ * Created by zhubg on 2017/3/6.
  */
 
 var app = (0, _express2.default)();
@@ -170,9 +170,165 @@ app.get('/test', function (req, res) {
 });
 
 app.get('/test5', function (req, res) {
-    //发送消息
-    console.log(globalSockets.length);
-    res.send("nice");
+    var accountName = "ffm";
+    var token = "39dd9e0b0d587bced6e5";
+    var bettingContents = [{
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "0"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "1"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "2"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "3"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "4"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "5"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "6"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "7"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "8"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "9"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "10"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "11"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "12"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "13"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "14"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "15"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "16"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "17"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "18"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "19"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "20"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "21"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "22"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "23"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "24"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "25"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "26"
+    }, {
+        bettingName: "point",
+        bettingNum: 300,
+        pointNum: "27"
+    }, {
+        bettingName: "big",
+        bettingNum: 2000
+
+    }, {
+        bettingName: "small",
+        bettingNum: 1000
+
+    }, {
+        bettingName: "single",
+        bettingNum: 2000
+
+    }, {
+        bettingName: "double",
+        bettingNum: 2000
+
+    }, {
+        bettingName: "smallSingle",
+        bettingNum: 20000
+
+    }, {
+        bettingName: "bigSingle",
+        bettingNum: 20000
+
+    }];
+
+    var Test_Query = 'mutation submitBetting($accountName: String!, $token: String!, $bettingContents: [BettingContent]) {\n                              submitBettingRecord(accountName: $accountName,token: $token,bettingContents: $bettingContents) {\n                                message\n                              }\n                            }';
+    (0, _nodeFetch2.default)('http://localhost:3000/graphql', {
+        method: 'POST',
+        body: JSON.stringify({
+            "query": Test_Query,
+            "variables": {
+                "accountName": accountName,
+                "token": token,
+                "bettingContents": bettingContents
+
+            }
+        }),
+        headers: { 'Content-Type': 'application/json' }
+    }).then(function (res) {
+        return res.json();
+    }).then(function (json) {
+        console.log(json);
+        res.send(json);
+    });
 });
 
 app.use('/graphql', (0, _cors2.default)(corsOptions), _bodyParser2.default.json(), (0, _graphqlServerExpress.graphqlExpress)({ schema: _schema.schema }));
