@@ -61,7 +61,7 @@ _nodeCron2.default.schedule('*/5 9-23 * * *', function () {
  * Created by zhubg on 2017/3/21.
  */
 
-_nodeCron2.default.schedule('40 */5 9-23 * * *', function () {
+_nodeCron2.default.schedule('20 1,6,11,16,21,26,31,36,41,46,51,56 9-23 * * *', function () {
     var now = (0, _moment2.default)();
     if (now.hour() === 9 && now.minute() === 0) {
         console.log((0, _moment2.default)().format('YYYY-MM-DD HH:mm:ss') + " 今日已开盘,下个周期开始结算");
