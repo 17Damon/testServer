@@ -28,10 +28,6 @@ var webdriver = require('selenium-webdriver'),
     By = webdriver.By,
     until = webdriver.until;
 
-var driver = new webdriver.Builder().forBrowser('phantomjs')
-// .forBrowser('chrome')
-.build();
-
 //开盘
 _nodeCron2.default.schedule('*/5 9-23 * * *', function () {
     var now = (0, _moment2.default)();
@@ -80,7 +76,16 @@ _nodeCron2.default.schedule('30 */5 9-23 * * *', function () {
         var endTime = _now.format('YYYY-MM-DD HH:mm:ss');
         console.log(endTime + " 取开奖结果");
 
-        driver.get('http://mopenweb.cloudapp.net/open/');
+        var driver = new webdriver.Builder().forBrowser('phantomjs')
+        // .forBrowser('chrome')
+        .build();
+
+        driver.then(function (d) {
+            return d.get('http://mopenweb.cloudapp.net/open/');
+        }).catch(function (err) {
+            console.log(err);
+        });
+        // driver.get('http://mopenweb.cloudapp.net/open/');
         //取开奖网站期号
         driver.findElement(By.className('col-lg-1 col-sm-2 col-xs-6 ng-scope ng-binding')).click().then(function () {
             return driver.sleep(500).then(function () {
