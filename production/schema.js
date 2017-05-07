@@ -13,6 +13,10 @@ var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _base_dao = require('./dao/base_dao');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -25,7 +29,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 //数据库dao
 
 
-var typeDefs = '\ntype User {\n    accountName: String!\n    password: String!\n    nickName: String!\n    phone: String!\n    qqNumber: String!\n    goldPoints: Int!\n    token: String!\n}\n\ntype LoginState {\n    token: String!\n    nickName: String!\n}\n\ntype Token {\n    token: String!\n}\n\ntype Message {\n    message: String!\n}\n\ntype BettingInformation  {\n    currentPeriodNum: Int!\n    previousPeriodNum: Int!\n    gainBonusSum: Int!\n    openingState: Boolean!\n    goldPoints: Int!\n    num1: Int!\n    num2: Int!\n    num3: Int!\n    sum: Int!  \n}\n\n#\u8F93\u5165\u7C7B\u578B\u5173\u952E\u5B57input\ninput BettingContent {\n    pointNum: String\n    bettingName: String!\n    bettingNum: Int!\n}\n\ntype Query {\n    getToken(id:ID!): Token!\n    newMessage(accountName:String!,token:String!,content:String!): Message!\n    loginUser(accountName:String!,password: String!):LoginState!\n    getBettingInformation(accountName:String!,token:String!): BettingInformation!\n    serverToClientMessage(command:String!,superToken:String!): Message!\n}\n\ntype Mutation {\n  # \u6CE8\u518C\u7528\u6237, return \u6807\u5FD7\n  submitUser(\n             accountName: String!,\n             password: String!,\n             nickName: String!,\n             phone: String!,\n             qqNumber: String!,\n             invitationCode: String!\n  ): Message!\n  # \u63D0\u4EA4\u4E0B\u6CE8\u8BB0\u5F55, return \u6807\u5FD7\n  submitBettingRecord(\n             accountName: String!,\n             token: String!,\n             bettingContents: [BettingContent]\n  ): Message!\n}\n\nschema {\n  query: Query\n  mutation: Mutation\n}\n';
+var typeDefs = '\ntype User {\n    accountName: String!\n    password: String!\n    nickName: String!\n    phone: String!\n    qqNumber: String!\n    goldPoints: Int!\n    token: String!\n}\n\ntype LoginState {\n    token: String!\n    nickName: String!\n}\n\ntype Token {\n    token: String!\n}\n\ntype Message {\n    message: String!\n}\n\ntype BettingInformation  {\n    currentPeriodNum: Int!\n    previousPeriodNum: Int!\n    gainBonusSum: Int!\n    openingState: Boolean!\n    goldPoints: Int!\n    num1: Int!\n    num2: Int!\n    num3: Int!\n    sum: Int!  \n}\n\n#\u8F93\u5165\u7C7B\u578B\u5173\u952E\u5B57input\ninput BettingContent {\n    pointNum: String\n    bettingName: String!\n    bettingNum: Int!\n}\n\ntype Query {\n    getToken(id:ID!): Token!\n    newMessage(accountName:String!,token:String!,content:String!): Message!\n    loginUser(accountName:String!,password: String!):LoginState!\n    getBettingInformation(accountName:String!,token:String!): BettingInformation!\n    serverToClientMessage(command:String!,superToken:String!): Message!\n    getCurrentAndPreviousBettingRecordByPeriodNumAndAccountName(accountName:String!): Message!\n}\n\ntype Mutation {\n  # \u6CE8\u518C\u7528\u6237, return \u6807\u5FD7\n  submitUser(\n             accountName: String!,\n             password: String!,\n             nickName: String!,\n             phone: String!,\n             qqNumber: String!,\n             invitationCode: String!\n  ): Message!\n  # \u63D0\u4EA4\u4E0B\u6CE8\u8BB0\u5F55, return \u6807\u5FD7\n  submitBettingRecord(\n             accountName: String!,\n             token: String!,\n             bettingContents: [BettingContent]\n  ): Message!\n  # \u63D0\u4EA4\u53D6\u6D88\u4E0B\u6CE8\u8BB0\u5F55, return \u6807\u5FD7\n  submitCancelBettingRecord(\n             accountName: String!,\n             token: String!,\n             bettingContents: [BettingContent]\n  ): Message!\n}\n\nschema {\n  query: Query\n  mutation: Mutation\n}\n';
 
 var Token = function Token(token) {
     _classCallCheck(this, Token);
@@ -138,6 +142,25 @@ var resolvers = {
                 return new Message("非法连接，超级口令错误");
             }
         },
+        getCurrentAndPreviousBettingRecordByPeriodNumAndAccountName: function getCurrentAndPreviousBettingRecordByPeriodNumAndAccountName() {
+            //参照  816322 期  2017-04-05 23:55:00
+            //每天开奖179期
+            var now = (0, _moment2.default)();
+            var daysNum = Math.floor((now - (0, _moment2.default)('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000));
+            var addDaysNum = Math.floor(((now - (0, _moment2.default)('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000) % 1 * 60 * 24 - 550) / 5);
+            addDaysNum = addDaysNum >= 0 ? addDaysNum : 0;
+            var currentPeriodNum = 179 * daysNum + 816324 + addDaysNum;
+            var params = {};
+            params.periodNum = currentPeriodNum;
+            params.accountName = arguments[1].accountName;
+            return (0, _base_dao.baseDao)('bettingRecord', 'getCurrentAndPreviousBettingRecordByPeriodNumAndAccountName', params).then(function (obj) {
+                console.log(obj);
+                return new Message(JSON.stringify(obj[0]));
+            }).catch(function (e) {
+                console.log(e);
+                return new Message("数据库连接失败");
+            });
+        },
         getBettingInformation: function getBettingInformation() {
             var _arguments3 = arguments;
 
@@ -184,16 +207,17 @@ var resolvers = {
                                 if (obj[0].infoValue) {
                                     params = {};
                                     params.periodNum = previousPeriodNum;
-                                    return (0, _base_dao.baseDao)('bettingRecord', 'getBettingRecordByPeriodNum', params).then(function (obj) {
-                                        if (obj[0]) {
+                                    params.accountName = _arguments3[1].accountName;
+                                    return (0, _base_dao.baseDao)('bettingRecord', 'getBettingRecordByPeriodNumAndAccountName', params).then(function (obj) {
+                                        if (obj.length > 0) {
                                             var tempSum = 0;
                                             for (var i = 0; i < obj.length; i++) {
                                                 for (var j = 0; j < obj[i].bettingGain.length; j++) {
                                                     tempSum = tempSum + obj[i].bettingGain[j].bettingNum * obj[i].bettingGain[j].oddsNum;
                                                 }
-                                                //上期赚取
-                                                gainBonusSum = tempSum;
                                             }
+                                            //上期赚取
+                                            gainBonusSum = tempSum;
                                         }
                                         return new BettingInformation(currentPeriodNum, previousPeriodNum, openingState, gainBonusSum, goldPoints, num1, num2, num3, sum);
                                     }).catch(function (e) {
@@ -203,6 +227,7 @@ var resolvers = {
                                 } else {
                                     params = {};
                                     params.periodNum = currentPeriodNum;
+                                    params.accountName = _arguments3[1].accountName;
                                     return (0, _base_dao.baseDao)('bettingRecord', 'getBettingRecordByPeriodNum', params).then(function (obj) {
                                         if (obj[0]) {
                                             var tempSum = 0;
@@ -210,9 +235,9 @@ var resolvers = {
                                                 for (var j = 0; j < obj[i].bettingContents.length; j++) {
                                                     tempSum = tempSum + obj[i].bettingContents[j].bettingNum;
                                                 }
-                                                //本期投注
-                                                gainBonusSum = tempSum;
                                             }
+                                            //本期投注
+                                            gainBonusSum = tempSum;
                                         }
                                         return new BettingInformation(currentPeriodNum, previousPeriodNum, openingState, gainBonusSum, goldPoints, num1, num2, num3, sum);
                                     }).catch(function (e) {
@@ -278,8 +303,171 @@ var resolvers = {
                 });
             }
         },
-        submitBettingRecord: function submitBettingRecord() {
+        submitCancelBettingRecord: function submitCancelBettingRecord() {
             var _arguments5 = arguments;
+
+
+            //参照  816322 期  2017-04-05 23:55:00
+            //每天开奖179期
+            var now = (0, _moment2.default)();
+            var daysNum = Math.floor((now - (0, _moment2.default)('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000));
+            var addDaysNum = Math.floor(((now - (0, _moment2.default)('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000) % 1 * 60 * 24 - 550) / 5);
+            addDaysNum = addDaysNum >= 0 ? addDaysNum : 0;
+            var currentPeriodNum = 179 * daysNum + 816324 + addDaysNum;
+
+            var params = {};
+            console.log("submitCancelBettingRecord");
+            console.log(arguments[1].accountName);
+            console.log(arguments[1].token);
+            console.log(arguments[1].bettingContents);
+            var argsBettingContents = arguments[1].bettingContents;
+            //取消下注总金额
+            var bettingSumPionts = 0;
+            // for (let i = 0; i < argsBettingContents.length; i++) {
+            //     bettingSumPionts = bettingSumPionts + parseInt(argsBettingContents[i].bettingNum, 10);
+            // }
+            console.log("bettingSumPionts: " + bettingSumPionts);
+            //查看开盘状态
+            params.systemInfoCode = "openingState";
+            return (0, _base_dao.baseDao)('systemInfo', 'getSystemInfoBySystemInfoCode', params).then(function (obj) {
+                if (obj[0].infoValue) {
+                    //验证口令用户名
+                    if (_arguments5[1].accountName && _arguments5[1].token) {
+                        params = {};
+                        params.accountName = _arguments5[1].accountName;
+                        return (0, _base_dao.baseDao)('user', 'getUserByAccountName', params).then(function (obj) {
+                            var goldPoints = obj[0].goldPoints;
+                            if (obj[0] && obj[0].token === _arguments5[1].token) {
+                                console.log("submitBetting_token_authenticate： " + (obj[0].token === _arguments5[1].token));
+                                //口令用户名验证成功,开始取消下注
+                                params = {};
+                                params.accountName = _arguments5[1].accountName;
+                                params.periodNum = currentPeriodNum;
+                                // params.periodNum = 821946;
+                                return (0, _base_dao.baseDao)('bettingRecord', 'getBettingRecordByPeriodNumAndAccountName', params).then(function (obj) {
+                                    var bettingContentsList = [];
+                                    var updateFlag = false;
+                                    if (obj.length > 0) {
+                                        var _loop = function _loop(i) {
+                                            var bettingContents = _lodash2.default.clone(obj[i].bettingContents);
+                                            var k = 0;
+                                            while (argsBettingContents.length > 0) {
+                                                if (argsBettingContents[k].bettingName === "point") {
+                                                    if (_lodash2.default.remove(bettingContents, function (n) {
+                                                        return n.bettingName === "point" && n.bettingNum === argsBettingContents[k].bettingNum && n.pointNum === argsBettingContents[k].pointNum;
+                                                    }).length > 0) {
+                                                        var index = _lodash2.default.findIndex(argsBettingContents, function (n) {
+                                                            return n.bettingName === "point" && n.bettingNum === argsBettingContents[k].bettingNum && n.pointNum === argsBettingContents[k].pointNum;
+                                                        });
+                                                        bettingSumPionts = bettingSumPionts + parseInt(argsBettingContents[k].bettingNum, 10);
+
+                                                        argsBettingContents.splice(index, 1);
+
+                                                        updateFlag = true;
+                                                    } else {
+                                                        k++;
+                                                    }
+                                                } else {
+                                                    if (_lodash2.default.remove(bettingContents, function (n) {
+                                                        return n.bettingName !== "point" && n.bettingName === argsBettingContents[k].bettingName && n.bettingNum === argsBettingContents[k].bettingNum;
+                                                    }).length > 0) {
+                                                        var _index = _lodash2.default.findIndex(argsBettingContents, function (n) {
+                                                            return n.bettingName !== "point" && n.bettingName === argsBettingContents[k].bettingName && n.bettingNum === argsBettingContents[k].bettingNum;
+                                                        });
+                                                        bettingSumPionts = bettingSumPionts + parseInt(argsBettingContents[k].bettingNum, 10);
+
+                                                        argsBettingContents.splice(_index, 1);
+
+                                                        updateFlag = true;
+                                                    } else {
+                                                        k++;
+                                                    }
+                                                }
+
+                                                if (argsBettingContents.length === k) {
+                                                    break;
+                                                }
+                                            }
+
+                                            bettingContentsList.push({
+                                                ID: obj[i]._id,
+                                                bettingContents: bettingContents
+                                            });
+                                        };
+
+                                        for (var i = 0; i < obj.length; i++) {
+                                            _loop(i);
+                                        }
+
+                                        if (!updateFlag) {
+                                            return new Message("无需更新");
+                                        }
+
+                                        console.log("bettingContentsList");
+                                        console.log(bettingContentsList);
+                                        params = {};
+                                        params.bettingContentsList = bettingContentsList;
+                                        return (0, _base_dao.baseDao)('bettingRecord', 'updateBettingContentsByID', params).then(function (obj) {
+                                            console.log(obj);
+
+                                            //开始更新余额
+                                            console.log("将要增加金额： +" + bettingSumPionts);
+                                            params = {};
+                                            params.accountName = _arguments5[1].accountName;
+                                            params.additionGoldPoints = bettingSumPionts;
+                                            return (0, _base_dao.baseDao)('user', 'updateGoldPointsByAccountName', params).then(function (obj) {
+                                                console.log(obj[0]);
+                                                if (obj[0] === undefined) {
+                                                    return new Message("没有该用户，取消投注更新金额失败");
+                                                } else if (obj[0].goldPoints === goldPoints + bettingSumPionts) {
+                                                    return new Message("取消成功");
+                                                } else {
+                                                    console.log("更新后与预计不符");
+                                                    console.log("obj[0].goldPoints");
+                                                    console.log(obj[0].goldPoints);
+                                                    console.log("goldPoints + bettingSumPionts");
+                                                    console.log(goldPoints + bettingSumPionts);
+
+                                                    return new Message("更新后与预计不符");
+                                                }
+                                            }).catch(function (e) {
+                                                console.log(e);
+                                                return new Message("数据库连接失败");
+                                            });
+                                        }).catch(function (e) {
+                                            console.log(e);
+                                            return new Message("数据库连接失败");
+                                        });
+                                    } else {
+                                        console.log("数据库无下注记录");
+                                        return new Message("数据库无下注记录");
+                                    }
+                                }).catch(function (e) {
+                                    console.log(e);
+                                    return new Message("数据库连接失败");
+                                });
+                            } else {
+                                console.log("非法连接，用户名口令不正确");
+                                return new Message("非法连接，用户名口令不正确");
+                            }
+                        }).catch(function (e) {
+                            console.log(e);
+                            return new Message("数据库连接失败");
+                        });
+                    } else {
+                        console.log("非法连接，用户名口令为空");
+                        return new Message("非法连接，用户名口令为空");
+                    }
+                } else {
+                    return new Message("现在是封盘时间，取消下注失败");
+                }
+            }).catch(function (e) {
+                console.log(e);
+                return new Message("数据库连接失败");
+            });
+        },
+        submitBettingRecord: function submitBettingRecord() {
+            var _arguments6 = arguments;
 
             var params = {};
             console.log("submitBetting");
@@ -299,26 +487,26 @@ var resolvers = {
             return (0, _base_dao.baseDao)('systemInfo', 'getSystemInfoBySystemInfoCode', params).then(function (obj) {
                 if (obj[0].infoValue) {
                     //验证口令用户名
-                    if (_arguments5[1].accountName && _arguments5[1].token) {
+                    if (_arguments6[1].accountName && _arguments6[1].token) {
                         params = {};
-                        params.accountName = _arguments5[1].accountName;
+                        params.accountName = _arguments6[1].accountName;
                         return (0, _base_dao.baseDao)('user', 'getUserByAccountName', params).then(function (obj) {
                             if (obj[0] && obj[0].goldPoints < bettingSumPionts) {
                                 return new Message("元宝不足，请充值");
-                            } else if (obj[0] && obj[0].token === _arguments5[1].token) {
-                                console.log("submitBetting_token_authenticate： " + (obj[0].token === _arguments5[1].token));
+                            } else if (obj[0] && obj[0].token === _arguments6[1].token) {
+                                console.log("submitBetting_token_authenticate： " + (obj[0].token === _arguments6[1].token));
                                 //口令用户名验证成功,开始更新余额
                                 console.log("将要增加金额： -" + bettingSumPionts);
                                 params = {};
-                                params.accountName = _arguments5[1].accountName;
+                                params.accountName = _arguments6[1].accountName;
                                 params.additionGoldPoints = 0 - bettingSumPionts;
                                 return (0, _base_dao.baseDao)('user', 'updateGoldPointsByAccountName', params).then(function (obj) {
                                     console.log(obj[0]);
                                     //开始记录下注信息
                                     params = {};
                                     var bettingRecord = {};
-                                    bettingRecord.accountName = _arguments5[1].accountName;
-                                    bettingRecord.bettingContents = _arguments5[1].bettingContents;
+                                    bettingRecord.accountName = _arguments6[1].accountName;
+                                    bettingRecord.bettingContents = _arguments6[1].bettingContents;
                                     bettingRecord.bettingDate = bettingDate.format('YYYY-MM-DD HH:mm:ss');
                                     bettingRecord.bettingGain = [];
 

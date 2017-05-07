@@ -23,7 +23,7 @@ function bettingRecordDao(module, method, params) {
 //功能Dao--start--
 var dao = {};
 
-//getUserByAccountName
+//getBettingRecordByEndTime
 dao.getBettingRecordByEndTime = function (module, method, params) {
     //some code
     console.log('bettingRecord-getBettingRecordByEndTime');
@@ -44,12 +44,50 @@ dao.getBettingRecordByEndTime = function (module, method, params) {
 dao.getBettingRecordByPeriodNum = function (module, method, params) {
     //some code
     console.log('bettingRecord-getBettingRecordByPeriodNum');
+    if (params.periodNum !== undefined) {
+        var bindVars = {};
+        bindVars.periodNum = params.periodNum;
+        var AQL = '\n                    For i in bettingRecord\n                        FILTER \n                            (i.periodNum == @periodNum) &&\n                            (i.settleFlag == false) \n                            return i\n                  ';
+        // console.log('AQL:' + AQL);
+        //promise
+        return db.query(AQL, bindVars).then(function (cursor) {
+            return cursor.all();
+        });
+    } else {
+        throw 'params.periodNum Undefined!Check it!';
+    }
+};
+
+//getCurrentAndPreviousBettingRecordByPeriodNumAndAccountName
+dao.getCurrentAndPreviousBettingRecordByPeriodNumAndAccountName = function (module, method, params) {
+    //some code
+    console.log('bettingRecord-getCurrentAndPreviousBettingRecordByPeriodNumAndAccountName');
     var bindVars = {};
     bindVars.tokill = tokill;
     bindVars.periodNum = params.periodNum;
-    if (params.periodNum) {
-        var periodNum = params.periodNum;
-        var AQL = '\n                    For i in bettingRecord\n                        FILTER i.periodNum == @periodNum\n                    return UNSET(i,@tokill)\n                  ';
+    bindVars.accountName = params.accountName;
+    if (params.periodNum !== undefined && params.accountName !== undefined) {
+        var AQL = '\n                    LET currentBettingRecord = (For i in bettingRecord\n                        FILTER i.periodNum == @periodNum && i.accountName == @accountName\n                    return UNSET(i,@tokill))\n                    LET previousBettingRecord = (For j in bettingRecord\n                        FILTER j.periodNum == @periodNum-1 && j.accountName == @accountName\n                    return UNSET(j,@tokill))\n                    return {currentBettingRecord:currentBettingRecord,previousBettingRecord:previousBettingRecord}\n                  ';
+        // console.log('AQL:' + AQL);
+        //promise
+        return db.query(AQL, bindVars).then(function (cursor) {
+            return cursor.all();
+        });
+    } else {
+        throw 'params.periodNum Undefined!Check it!';
+    }
+};
+
+//getBettingRecordByPeriodNumAndAccountName
+dao.getBettingRecordByPeriodNumAndAccountName = function (module, method, params) {
+    //some code
+    console.log('bettingRecord-getBettingRecordByPeriodNumAndAccountName');
+    var bindVars = {};
+    bindVars.tokill = ['_rev', '_key'];
+    bindVars.periodNum = params.periodNum;
+    bindVars.accountName = params.accountName;
+    if (params.periodNum !== undefined && params.accountName !== undefined) {
+        var AQL = '\n                    For i in bettingRecord\n                        FILTER i.periodNum == @periodNum && i.accountName == @accountName\n                    return UNSET(i,@tokill)\n                  ';
         // console.log('AQL:' + AQL);
         //promise
         return db.query(AQL, bindVars).then(function (cursor) {
@@ -98,6 +136,26 @@ dao.updateBettingGainAndSettleFlagAndSettleDateByID = function (module, method, 
         });
     } else {
         throw 'params.bettingGainList or params.settleDate Undefined!Check it!';
+    }
+};
+
+//updateBettingContentsByID
+dao.updateBettingContentsByID = function (module, method, params) {
+    //some code
+    var bindVars = {};
+    bindVars.tokill = tokill;
+    bindVars.bettingContentsList = params.bettingContentsList;
+    console.log('bettingRecordDao-updateBettingContentsByID');
+    if (params.bettingContentsList !== undefined) {
+        var AQL = '\n        For i in @bettingContentsList\n        For j in bettingRecord\n            FILTER i.ID == j._id\n            UPDATE j WITH {bettingContents:i.bettingContents} IN bettingRecord\n            return UNSET(NEW,@tokill)\n        ';
+        // console.log('AQL:' + AQL);
+
+        //promise
+        return db.query(AQL, bindVars).then(function (cursor) {
+            return cursor.all();
+        });
+    } else {
+        throw 'params.bettingContentsList Undefined!Check it!';
     }
 };
 

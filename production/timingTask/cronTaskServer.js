@@ -491,9 +491,9 @@ _nodeCron2.default.schedule('30 */5 9-23 * * *', function () {
                                                     var gainBonusRecordList = [];
 
                                                     params = {};
-                                                    params.endTime = endTime;
+                                                    params.periodNum = previousPeriodNum;
                                                     //结算
-                                                    (0, _base_dao.baseDao)('bettingRecord', 'getBettingRecordByEndTime', params).then(function (obj) {
+                                                    (0, _base_dao.baseDao)('bettingRecord', 'getBettingRecordByPeriodNum', params).then(function (obj) {
                                                         console.log("bettingRecord_num");
                                                         console.log(obj.length);
                                                         //遍历所有人下注信息
