@@ -287,7 +287,7 @@ const resolvers = {
                                         params = {};
                                         params.periodNum = currentPeriodNum;
                                         params.accountName = arguments[1].accountName;
-                                        return baseDao('bettingRecord', 'getBettingRecordByPeriodNum', params).then(obj=> {
+                                        return baseDao('bettingRecord', 'getBettingRecordByPeriodNumAndAccountName', params).then(obj=> {
                                             if (obj[0]) {
                                                 let tempSum = 0;
                                                 for (let i = 0; i < obj.length; i++) {

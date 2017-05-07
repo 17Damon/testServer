@@ -228,7 +228,7 @@ var resolvers = {
                                     params = {};
                                     params.periodNum = currentPeriodNum;
                                     params.accountName = _arguments3[1].accountName;
-                                    return (0, _base_dao.baseDao)('bettingRecord', 'getBettingRecordByPeriodNum', params).then(function (obj) {
+                                    return (0, _base_dao.baseDao)('bettingRecord', 'getBettingRecordByPeriodNumAndAccountName', params).then(function (obj) {
                                         if (obj[0]) {
                                             var tempSum = 0;
                                             for (var i = 0; i < obj.length; i++) {
