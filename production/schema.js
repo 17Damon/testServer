@@ -285,7 +285,7 @@ var resolvers = {
                         params.user = _arguments4[1];
                         params.user.token = "";
                         params.user.goldPoints = 0;
-                        console.log(params);
+                        params.user.introducerAccountName = "";
                         return (0, _base_dao.baseDao)('user', 'insertUser', params).then(function (obj) {
                             if (obj[0]) {
                                 console.log("注册成功");

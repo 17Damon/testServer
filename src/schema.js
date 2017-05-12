@@ -344,7 +344,7 @@ const resolvers = {
                             params.user = arguments[1];
                             params.user.token = "";
                             params.user.goldPoints = 0;
-                            console.log(params);
+                            params.user.introducerAccountName = "";
                             return baseDao('user', 'insertUser', params)
                                 .then(obj=> {
                                     if (obj[0]) {
