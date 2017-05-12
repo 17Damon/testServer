@@ -502,33 +502,75 @@ var resolvers = {
                                 params.additionGoldPoints = 0 - bettingSumPionts;
                                 return (0, _base_dao.baseDao)('user', 'updateGoldPointsByAccountName', params).then(function (obj) {
                                     console.log(obj[0]);
-                                    //开始记录下注信息
-                                    params = {};
-                                    var bettingRecord = {};
-                                    bettingRecord.accountName = _arguments6[1].accountName;
-                                    bettingRecord.bettingContents = _arguments6[1].bettingContents;
-                                    bettingRecord.bettingDate = bettingDate.format('YYYY-MM-DD HH:mm:ss');
-                                    bettingRecord.bettingGain = [];
 
+                                    //查询是否存在该用户下注记录
+                                    params = {};
                                     //参照  816322 期  2017-04-05 23:55:00
                                     //每天开奖179期
                                     var daysNum = Math.floor((bettingDate - (0, _moment2.default)('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000));
                                     var addDaysNum = Math.floor(((bettingDate - (0, _moment2.default)('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000) % 1 * 60 * 24 - 550) / 5);
                                     addDaysNum = addDaysNum >= 0 ? addDaysNum : 0;
                                     var periodNum = 179 * daysNum + 816324 + addDaysNum;
-                                    bettingRecord.periodNum = periodNum;
-                                    bettingRecord.settleFlag = false;
-                                    bettingRecord.settleDate = "";
-                                    params.bettingRecord = bettingRecord;
-                                    return (0, _base_dao.baseDao)('bettingRecord', 'insertBettingRecord', params).then(function (obj) {
-                                        console.log(obj[0]);
-                                        //下注成功
-                                        return new Message("下注成功");
+                                    params.accountName = _arguments6[1].accountName;
+                                    params.periodNum = periodNum;
+                                    return (0, _base_dao.baseDao)('bettingRecord', 'getBettingRecordByPeriodNumAndAccountName', params).then(function (obj) {
+                                        if (obj.length === 0) {
+                                            //开始新增下注信息
+                                            params = {};
+                                            var bettingRecord = {};
+                                            bettingRecord.accountName = _arguments6[1].accountName;
+
+                                            //增加bettingContents属性ID
+                                            for (var _i = 0; _i < _arguments6[1].bettingContents.length; _i++) {
+                                                _arguments6[1].bettingContents[_i].id = _i + "";
+                                            }
+
+                                            bettingRecord.bettingContents = _arguments6[1].bettingContents;
+                                            bettingRecord.bettingDate = bettingDate.format('YYYY-MM-DD HH:mm:ss');
+                                            bettingRecord.bettingGain = [];
+                                            bettingRecord.periodNum = periodNum;
+                                            bettingRecord.settleFlag = false;
+                                            bettingRecord.settleDate = "";
+                                            params.bettingRecord = bettingRecord;
+                                            return (0, _base_dao.baseDao)('bettingRecord', 'insertBettingRecord', params).then(function (obj) {
+                                                console.log(obj[0]);
+                                                //下注成功
+                                                return new Message("下注成功");
+                                            }).catch(function (e) {
+                                                console.log(e);
+                                                return new Message("数据库连接失败");
+                                            });
+                                        } else if (obj.length === 1) {
+                                            //开始更新原有下注信息
+                                            var _bettingContents = _lodash2.default.concat(_arguments6[1].bettingContents, obj[0].bettingContents);
+                                            console.log("bettingContents.length");
+                                            console.log(_bettingContents.length);
+                                            for (var _i2 = 0; _i2 < _bettingContents.length; _i2++) {
+                                                _bettingContents[_i2].id = _i2 + "";
+                                            }
+
+                                            params = {};
+                                            var bettingContentsList = [];
+                                            bettingContentsList.push({
+                                                ID: obj[0]._id,
+                                                bettingContents: _bettingContents
+                                            });
+                                            params.bettingContentsList = bettingContentsList;
+                                            return (0, _base_dao.baseDao)('bettingRecord', 'updateBettingContentsByID', params).then(function (obj) {
+                                                console.log(obj[0]);
+                                                //下注成功
+                                                return new Message("下注成功");
+                                            }).catch(function (e) {
+                                                console.log(e);
+                                                return new Message("数据库连接失败");
+                                            });
+                                        } else {
+                                            return new Message("数据库存在多条记录，错误！");
+                                        }
                                     }).catch(function (e) {
                                         console.log(e);
                                         return new Message("数据库连接失败");
                                     });
-                                    // return new Message("下注成功");
                                 }).catch(function (e) {
                                     console.log(e);
                                     return new Message("数据库连接失败");

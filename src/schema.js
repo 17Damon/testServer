@@ -584,34 +584,81 @@ const resolvers = {
                                             return baseDao('user', 'updateGoldPointsByAccountName', params)
                                                 .then(obj=> {
                                                     console.log(obj[0]);
-                                                    //开始记录下注信息
-                                                    params = {};
-                                                    let bettingRecord = {};
-                                                    bettingRecord.accountName = arguments[1].accountName;
-                                                    bettingRecord.bettingContents = arguments[1].bettingContents;
-                                                    bettingRecord.bettingDate = bettingDate.format('YYYY-MM-DD HH:mm:ss');
-                                                    bettingRecord.bettingGain = [];
 
+                                                    //查询是否存在该用户下注记录
+                                                    params = {};
                                                     //参照  816322 期  2017-04-05 23:55:00
                                                     //每天开奖179期
                                                     let daysNum = (Math.floor((bettingDate - moment('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000)));
                                                     let addDaysNum = Math.floor((((( (bettingDate - moment('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000) ) % 1) * 60 * 24) - 550) / 5);
                                                     addDaysNum = addDaysNum >= 0 ? addDaysNum : 0;
                                                     var periodNum = 179 * daysNum + 816324 + addDaysNum;
-                                                    bettingRecord.periodNum = periodNum;
-                                                    bettingRecord.settleFlag = false;
-                                                    bettingRecord.settleDate = "";
-                                                    params.bettingRecord = bettingRecord;
-                                                    return baseDao('bettingRecord', 'insertBettingRecord', params)
+                                                    params.accountName = arguments[1].accountName;
+                                                    params.periodNum = periodNum;
+                                                    return baseDao('bettingRecord', 'getBettingRecordByPeriodNumAndAccountName', params)
                                                         .then(obj=> {
-                                                            console.log(obj[0]);
-                                                            //下注成功
-                                                            return new Message("下注成功");
-                                                        }).catch(function (e) {
-                                                            console.log(e);
-                                                            return new Message("数据库连接失败");
-                                                        });
-                                                    // return new Message("下注成功");
+                                                            if(obj.length === 0){
+                                                                //开始新增下注信息
+                                                                params = {};
+                                                                let bettingRecord = {};
+                                                                bettingRecord.accountName = arguments[1].accountName;
+
+                                                                //增加bettingContents属性ID
+                                                                for (let i=0 ; i< arguments[1].bettingContents.length;i++){
+                                                                    arguments[1].bettingContents[i].id = i+"";
+                                                                }
+
+                                                                bettingRecord.bettingContents = arguments[1].bettingContents;
+                                                                bettingRecord.bettingDate = bettingDate.format('YYYY-MM-DD HH:mm:ss');
+                                                                bettingRecord.bettingGain = [];
+                                                                bettingRecord.periodNum = periodNum;
+                                                                bettingRecord.settleFlag = false;
+                                                                bettingRecord.settleDate = "";
+                                                                params.bettingRecord = bettingRecord;
+                                                                return baseDao('bettingRecord', 'insertBettingRecord', params)
+                                                                    .then(obj=> {
+                                                                        console.log(obj[0]);
+                                                                        //下注成功
+                                                                        return new Message("下注成功");
+                                                                    }).catch(function (e) {
+                                                                        console.log(e);
+                                                                        return new Message("数据库连接失败");
+                                                                    });
+                                                            }else if(obj.length === 1){
+                                                                //开始更新原有下注信息
+                                                                let bettingContents = lodashFull.concat(arguments[1].bettingContents,obj[0].bettingContents);
+                                                                console.log("bettingContents.length");
+                                                                console.log(bettingContents.length);
+                                                                for (let i=0 ; i< bettingContents.length;i++){
+                                                                    bettingContents[i].id = i+"";
+                                                                }
+
+                                                                params = {};
+                                                                let bettingContentsList = [];
+                                                                bettingContentsList.push({
+                                                                    ID: obj[0]._id,
+                                                                    bettingContents: bettingContents
+                                                                });
+                                                                params.bettingContentsList=bettingContentsList;
+                                                                return baseDao('bettingRecord', 'updateBettingContentsByID', params)
+                                                                    .then(obj=> {
+                                                                        console.log(obj[0]);
+                                                                        //下注成功
+                                                                        return new Message("下注成功");
+                                                                    }).catch(function (e) {
+                                                                        console.log(e);
+                                                                        return new Message("数据库连接失败");
+                                                                    });
+                                                            }else{
+                                                                return new Message("数据库存在多条记录，错误！");
+                                                            }
+
+
+                                                            }).catch(function (e) {
+                                                        console.log(e);
+                                                        return new Message("数据库连接失败");
+                                                    });
+
                                                 }).catch(function (e) {
                                                     console.log(e);
                                                     return new Message("数据库连接失败");
