@@ -54,6 +54,11 @@ require('socketio-auth')(io, {
                 if (obj[0] && obj[0].token === data.token) {
                     console.log("authenticate： " + (obj[0].token === data.token));
                     socket.join("room1");
+
+                    io.to('room1').emit('serverToClientMessage', {
+                        command: "getBettingInformation"
+                    });
+
                     return callback(null, true);
                 } else {
                     console.log("非法连接，用户名口令不正确");
