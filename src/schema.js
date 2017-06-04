@@ -500,12 +500,6 @@ const resolvers = {
                                                                 } else if (obj[0].goldPoints === goldPoints + bettingSumPionts) {
                                                                     return new Message("取消成功");
                                                                 } else {
-                                                                    console.log("更新后与预计不符");
-                                                                    console.log("obj[0].goldPoints");
-                                                                    console.log(obj[0].goldPoints);
-                                                                    console.log("goldPoints + bettingSumPionts");
-                                                                    console.log(goldPoints + bettingSumPionts);
-
                                                                     return new Message("更新后与预计不符");
                                                                 }
                                                             }).catch(function (e) {

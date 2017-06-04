@@ -6,7 +6,6 @@
 
 //allDao注册
 var dao = {};
-dao.item = require('./item_dao');
 dao.user = require('./user_dao');
 dao.bettingRecord = require('./bettingRecord_dao');
 dao.systemInfo = require('./systemInfo_dao');
