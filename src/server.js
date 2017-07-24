@@ -556,25 +556,25 @@ app.get('/test6', function (req, res) {
                               }
                             }`;
     fetch('http://localhost:3000/graphql', {
-        method: 'POST',
-        body: JSON.stringify(
-            {
-                "query": Test_Query,
-                "variables":{
-                    "accountName":accountName,
-                    "token":token,
-                    "bettingContents":bettingContents
+            method: 'POST',
+            body: JSON.stringify(
+                {
+                    "query": Test_Query,
+                    "variables":{
+                        "accountName":accountName,
+                        "token":token,
+                        "bettingContents":bettingContents
 
+                    }
                 }
-            }
-        ),
-        headers: {'Content-Type': 'application/json'}
-    })
-        .then(function (res) {
-            return res.json();
-        }).then(function (json) {
-        console.log(json);
-        res.send(json);
+            ),
+            headers: {'Content-Type': 'application/json'}
+        })
+            .then(function (res) {
+                return res.json();
+            }).then(function (json) {
+                console.log(json);
+                res.send(json);
     });
 });
 
