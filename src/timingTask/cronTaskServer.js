@@ -735,8 +735,6 @@ cron.schedule('20 */5 9-23 * * *', function () {
         }).catch(err=> {
             console.log(err)
         });
-
-        driver.quit();
     }
 });
 

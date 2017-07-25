@@ -690,8 +690,6 @@ _nodeCron2.default.schedule('20 */5 9-23 * * *', function () {
         }).catch(function (err) {
             console.log(err);
         });
-
-        driver.quit();
     }
 });
 
