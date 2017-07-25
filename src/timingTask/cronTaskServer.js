@@ -89,11 +89,6 @@ cron.schedule('20 */5 9-23 * * *', function () {
             //检测期号是否相同
             if (previousPeriodNum === periodNum) {
                 //开始取当期开奖数字
-                return driver.findElement(By.className('r1')).findElements(By.css('span')).then(function (obj) {
-                    let num1 = 0;
-                    let num2 = 0;
-                    let num3 = 0;
-                    if (obj.length === 4) {
                         let arr = $('div .lott_cont table tr td').next().html().split(",").sort(function(a, b) {
                             return a - b;
                         });
@@ -734,14 +729,6 @@ cron.schedule('20 */5 9-23 * * *', function () {
                             }).catch(function (e) {
                             console.log(e);
                         });
-
-                    } else {
-                        console.log("读取错误");
-                    }
-
-                }).catch(err=> {
-                    console.log(err)
-                });
             } else {
                 console.log("第 " + previousPeriodNum + " 期开奖结果不存在");
             }
