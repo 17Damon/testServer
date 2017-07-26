@@ -54,7 +54,7 @@ cron.schedule('*/5 9-23 * * *', function () {
 });
 
 //取开奖结果，结算
-cron.schedule('30 */5 9-23 * * *', function () {
+cron.schedule('50 */5 9-23 * * *', function () {
     // cron.schedule('30 1,6,11,16,21,26,31,36,41,46,51,56 9-23 * * *', function () {
     let now = moment();
     if (now.hour() === 9 && now.minute() === 0) {

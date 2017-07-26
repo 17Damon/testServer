@@ -61,7 +61,7 @@ _nodeCron2.default.schedule('*/5 9-23 * * *', function () {
 });
 
 //取开奖结果，结算
-_nodeCron2.default.schedule('30 */5 9-23 * * *', function () {
+_nodeCron2.default.schedule('50 */5 9-23 * * *', function () {
     // cron.schedule('30 1,6,11,16,21,26,31,36,41,46,51,56 9-23 * * *', function () {
     var now = (0, _moment2.default)();
     if (now.hour() === 9 && now.minute() === 0) {
