@@ -371,7 +371,7 @@ const resolvers = {
             let daysNum = (Math.floor((now - moment('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000)));
             let addDaysNum = Math.floor((((( (now - moment('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000) ) % 1) * 60 * 24) - 550) / 5);
             addDaysNum = addDaysNum >= 0 ? addDaysNum : 0;
-            let currentPeriodNum = 179 * daysNum + 816324 + addDaysNum;
+            let currentPeriodNum = 179 * daysNum + 816323 + addDaysNum;
 
             let params = {};
             console.log("submitCancelBettingRecord");
@@ -586,7 +586,7 @@ const resolvers = {
                                                     let daysNum = (Math.floor((bettingDate - moment('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000)));
                                                     let addDaysNum = Math.floor((((( (bettingDate - moment('2017-04-05 23:55:00')) / (24 * 60 * 60 * 1000) ) % 1) * 60 * 24) - 550) / 5);
                                                     addDaysNum = addDaysNum >= 0 ? addDaysNum : 0;
-                                                    var periodNum = 179 * daysNum + 816324 + addDaysNum;
+                                                    var periodNum = 179 * daysNum + 816323 + addDaysNum;
                                                     params.accountName = arguments[1].accountName;
                                                     params.periodNum = periodNum;
                                                     return baseDao('bettingRecord', 'getBettingRecordByPeriodNumAndAccountName', params)
