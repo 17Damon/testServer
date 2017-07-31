@@ -1,8 +1,5 @@
 /node_modules
 /.idea
-/DBA.txt
-/.babelrc
-/database_Description
-/.gitignore
 /test
-/src//test
+/src/test
+/production/test

@@ -1,0 +1,163 @@
+启动
+
+--old version
+/usr/local/opt/arangodb/sbin/arangod &
+
+--version 3.1
+You can access the server using a browser at 'http://127.0.0.1:8529/'
+or start the ArangoDB shell
+   '/Applications/ArangoDB3-CLI.app/Contents/MacOS/arangosh'
+
+命令行
+arangosh --help-all
+
+--连接到一个ArangoDB服务器IP 192.168.173.13 端口 8529
+/Applications/ArangoDB3-CLI.app/Contents/MacOS/arangosh  \
+  --server.endpoint tcp://139.196.80.85:8529  \
+  --server.username root  \
+  --server.password 46JthfWI1rY9WGO1  \
+  --server.database phonegame  \
+  --server.authentication true
+
+/Applications/ArangoDB3-CLI.app/Contents/MacOS/arangosh  \
+  --server.endpoint tcp://139.196.80.85:8529  \
+  --server.username tester  \
+  --server.password cqmygysdss1987  \
+  --server.database myapp  \
+  --server.authentication true
+
+--连接到一个ArangoDB服务器IP 192.168.173.13 端口 8529
+/Applications/ArangoDB3-CLI.app/Contents/MacOS/arangosh  \
+  --server.endpoint tcp://139.196.80.85:8529  \
+  --server.username tester  \
+  --server.password cqmygysdss1987  \
+  --server.database phonegame  \
+  --server.authentication true
+
+--创建数据库myapp
+db._createDatabase("myapp");
+db._createDatabase("phonegame");
+
+--新增用户
+var users = require("@arangodb/users");
+users.save("tester", "cqmygysdss1987");
+
+--授权数据库
+var users = require("@arangodb/users");
+users.grantDatabase("tester", "myapp");
+users.grantDatabase("tester", "phonegame");
+
+--使用数据库myapp
+db._useDatabase("myapp");
+
+--查看帮助
+db._help()
+
+--Demo支持多行
+for (var i = 0; i < 10; i ++) {
+	require("internal").print("Hello world " + i + "!");
+}
+
+--create_collections
+db._create("test");
+db._create("bettingRecord");
+db._create("lotteryRecord");
+db._create("pointAddAndSubtractRecord");
+
+
+--删除
+db._drop('bettingRecord');
+db._drop('lotteryRecord');
+
+
+--查看collection状态
+db.permission;
+
+--从内存卸载
+db.five.unload();
+
+--save value to colletion
+for (i = 0; i < 5; i++) db.five.save({value:i});
+
+--outprint collection
+db.five.toArray();
+
+--outprint single element
+db.five.byExample({value:30}).toArray();
+
+--AQL outprint single element
+db._query('FOR user IN five FILTER user.value == 30 RETURN user').toArray();
+db._query('FOR user IN five FILTER user.value <= 5 RETURN user').toArray();
+
+
+db._query(`
+            INSERT {
+                       id: 'ytyy',
+                       section: '医疗保险',
+                       postingtime: 'ccc',
+                       title:'关于医疗保险的温馨提示',
+                       detail: '<h1 style="text-align: center;"><span style="color: rgb(65, 140, 175);">关于医疗保险的温馨提示</span></h1><hr><p style="text-align: center;"><b>日期：2016-09-26&nbsp;来源：市社保局</b></p><p>　　近期，电信诈骗案件持续高发，有不法分子冒用“社保”名义实施诈骗，严重危害广大市民财产安全。为让广大市民了解掌握冒用“社保”名义诈骗的手法，增强防范电信诈骗的意识和能力，现梳理了常见的冒用“社保”名义诈骗手法如下：</p><p>　　骗术一：“社保卡消费异常，账户被冻结”</p><p>　　通过电信伪基站发送短信或拨打电话，冒用“社保”名义以社保卡（医保卡）消费异常被盗刷或欠费被冻结为名，要求参保人配合处理，提供个人信息等相关内容，诱骗参保人员转账汇款实施诈骗。</p><p>　　骗术二：“补充登记完善社保个人信息”</p><p>　　通过电脑改号软件伪装成“社保机构”对外公布的联系电话致电参保人，以补充登记完善社保个人信息为名，骗取个人身份信息和银行卡信息进行诈骗 。</p><p>　　骗术三：“发放社保补贴”</p><p>　　以发放“社保补贴”为名发送诈骗短信或拨打电话，骗子在解读“社保政策”获取信任后，诱骗参保人的个人身份信息和银行卡信息，实施诈骗 。</p><p>　　骗术四：“伪造社保虚假公文”</p><p>　　以社保经办机构名义，伪造虚假文件向参保单位及个人发放，以社保基金账户变更为名，要求参保单位和个人预交社保费，直接将资金转入某银行帐户实施诈骗。</p><p>　　骗术五：“代缴社保、补缴社保”</p><p>　　非深圳户籍人员在购房、办理居住证、子女入学等均有参保年限要求，不法分子以代理社保参保为名发送诈骗短信或拨打电话，谎称可挂靠参保或补缴社保，要求转账汇款缴交社保费（另，挂靠参保属违法行为，一经发现将根据规定进行清理并处罚）。</p><p>　　骗术六：“办理社保关系转移”</p><p>　　因工作变换，参保人经常会跨市、跨省办理社保关系转移，不法分子以社保经办机构名义拨打电话，要求参保人转保时将钱转入指定个人账户。</p><p>　　防范要点：</p><p>　　一、不要随便点击或拨打短信里的不明链接和电话。</p><p>　　二、社保重要政策调整或实施我局均会在报纸、广播、电视、官方网站、微信公众号等正规渠道进行公告。</p><p>　　三、社保部门办理社保费征收、社保待遇支付、医疗费报销等业务均使用账户名为“深圳市社会保险基金管理局”的单位账户，不会要求参保人转账汇款到私人账户。</p><p>　　四、凡以社保名义的来信或来电涉及转账汇款的，请拨打全市统一社会保障咨询热线12333或到社保经办机构现场核实，谨防上当受骗。</p><p>　　五、如发现受骗应第一时间拨打110向公安部门报案。深圳市公安局反信息诈骗咨询专线号码：0755-81234567。</p><p><br></p><p style="text-align: right;"><b>　　深圳市社会保险基金管理局</b></p><p style="text-align: right;"><b>　　2016年9月26日</b></p>'
+                   }
+            IN test
+            return NEW
+        `).toArray();
+
+
+db._query(`
+            INSERT {
+                       id: 'manager',
+                       name: 'manager',
+                       password: '123456',
+                       publishtoken: 'publishtoken'
+                       }
+            IN user
+            return NEW
+        `).toArray();
+
+db._query(`
+                  For i in test
+                      FILTER i.id == 'ccc'
+                      return i
+                  `).toArray();
+db._query(`
+                For i in user
+                            FILTER i.id == 'manager'
+                            UPDATE i WITH {publishtoken: '09fcf6bf78871fa9b4d3' } IN user
+                            return NEW
+`).toArray();
+ArangoDB 3 (https://www.arangodb.com)
+  The multi-model NoSQL database: distributed free and open-source database
+  with a flexible data model for documents, graphs, and key-values. Build
+  high performance applications using a convenient SQL-like query language
+  or JavaScript extensions.
+
+First Steps with ArangoDB:
+  https://www.arangodb.com/quickstart
+
+Upgrading ArangoDB:
+  https://docs.arangodb.com/Installing/Upgrading.html
+
+Upgrading ArangoDB database files:
+  > /etc/init.d/arangodb3 upgrade
+
+Configuration file:
+  /etc/arangodb3/arangod.conf
+
+Start ArangoDB shell client:
+  > /usr/bin/arangosh
+
+Start ArangoDB service:
+  > /etc/init.d/arangodb3 start
+
+cat: /etc/hostname: 没有那个文件或目录
+SECURITY HINT:
+run 'arango-secure-installation' to set a root password
+the current password is ab0c742930bfb10a4abd2d990b2df11d
+(in case this a FRESH install, for UPGRADE the password
+will not be changed)
+  Verifying  : arangodb3-3.0.10-22.1.x86_64                                 1/1
+
+已安装:
+  arangodb3.x86_64 0:3.0.10-22.1
+
+完毕！
